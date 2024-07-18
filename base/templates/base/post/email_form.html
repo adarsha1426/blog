@@ -1,0 +1,5 @@
+<form action="{% url "base:email" %}" method="POST">
+    {% csrf_token %}
+    {{email_form.as_p}}
+    <input type="button" value="Submit">
+</form>

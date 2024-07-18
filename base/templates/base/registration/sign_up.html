@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% if messages %}
+    <h1>{{messages}}</h1>
+    {% endif %}
+    <form action="{% url "base:register" %}" method="POST">
+        {% csrf_token %}
+        {{form.as_p}}
+        <input type="Submit" value="Sign up">
+    </form>
+</body>
+</html>

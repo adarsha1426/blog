@@ -1,2 +1,21 @@
-<h1>Hello world</h1>
 
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static "css/blog.css" %}">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Welcome to the blog app</h1>
+<a href="{% url "base:post_list" %}" >Post_list</a>
+<a href="{% url "base:login" %}">Login</a>
+<a href="{% url "base:register" %}">Register</a>
+{% if request.user %}
+<h1>{{user}}</h1>
+    <a href="{% url "base:logout" %}">Logout</a>
+{% endif %}
+</body>
+</html>

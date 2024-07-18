@@ -8,7 +8,6 @@ class PublishedManager(models.Manager):
         return super().get_queryset()\
             .filter(status=Post.Status.PUBLISHED)
 
-
 class Post(models.Model):
 
     class Status(models.TextChoices):
@@ -44,4 +43,6 @@ class Post(models.Model):
                                                 self.publish.month,
                                                 self.publish.day,
                                                 self.slug])
-    
+
+class LoginForm(User):
+    pass
