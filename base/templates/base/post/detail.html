@@ -4,6 +4,11 @@
     <h1>{{post.title}}</h1>
     <p class="date">
         Published {{post.publish}} by {{post.author}}
-
         {{post.body|linebreaks}}
+        <hr>
+        {% for comment in comments %}
+    <p>{{comment}}<p>
+{% endfor %}
+        {% include "base/post/comment_form.html" %}
 {% endblock  %}
+{% include "base/post/comment_form.html" %}
