@@ -3,11 +3,10 @@ from django.http import Http404
 from .models import Post
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate,login,logout as auth_logout
-from .forms import EmailPostForm,RegistrationForm,LoginForm
+from .forms import EmailPostForm,RegistrationForm,LoginForm,CommentForm
 from django.contrib.auth.forms import UserCreationForm
 from django.core.mail import BadHeaderError, send_mail
 from django.http import HttpResponse, HttpResponseRedirect
-
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 from django.contrib import messages
 #class based views
@@ -37,7 +36,7 @@ def login_view(request):
 
 def logout_view(request):
     auth_logout(request)
-    return redirect('login')
+    return redirect('base:login')
 
 def register(request):
     if request.method=="POST":
@@ -67,6 +66,81 @@ def post_share(request,post_id):
             form=EmailPostForm()
     return render(request,'base/post/share.html',{'post':post,'form':form})
 
+def post_detail(request, year, month, day, post):
+    post = get_object_or_404(Post,
+                             status=Post.Status.PUBLISHED,
+                             slug=post,
+                             publish__year=year,
+                             publish__month=month,
+                             publish__day=day)
+    # List of active comments for this post
+    comments = post.comments.filter(active=True)
+    # Form for users to comment
+    form = CommentForm()
+
+    return render(request,
+                  'base/post/detail.html',
+                  {'post': post,
+                   'comments': comments,
+                   'form': form})
+
+def post_comment(request,post_id):
+    post=get_object_or_404(Post,id=post_id,status='published')
+    comment=None
+    form=CommentForm(data=request.POST)
+    if form.is_valid():
+        comment=form.save(commit=False)
+        comment.post=post
+        comment.save()
+        return render(request,'base/post/comment.html',{
+                                            'post':post,
+                                                'form':form,
+                                                'comment':comment
+                                                 })
+    else:
+        form=CommentForm()
+        print(form.label_suffix)
+    return render(request,'blog/post/comment_form.html',{'post':post,
+                                                        'comment':comment,
+                                                        'form':form})
+
+def email(request):
+    email_form=EmailPostForm()
+    if request.method=="POST":
+        form=EmailPostForm(request.post)
+        if form.is_valid():
+            name=form.cleaned_data('name')
+            email=form.cleaned_data('email')
+            to=form.cleaned_data('to')
+            comments=form.cleaned_data('comments')
+            send_mail(
+                        "Subject",
+                        "Message",
+                        "adarshamishra89@gmail.com",
+                        ['adarshamishra98@gmail.com'],
+)
+            print(name,email,to,email,comments)
+            form.save()
+    else:
+        email_form=EmailPostForm()
+        return render(request,"base/post/email_form.html",{'email_form':email_form})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # def post_list(request):
 #     post_list = Post.published.all()
@@ -84,37 +158,3 @@ def post_share(request,post_id):
 #     return render(request,
 #                   'base/post/list.html',
 #                   {'posts': posts})
-
-
-def post_detail(request,year,month,day,post):
-    post=get_object_or_404(Post,
-                           status=Post.Status.PUBLISHED,
-                           slug=post,
-                           publish__year=year,
-                           publish__month=month,
-                           publish__day=day)
-
-    return render(request,'base/post/detail.html',{'post':post})
-
-
-def email(request):
-    email_form=EmailPostForm()
-    if request.method=="POST":
-        form=EmailPostForm(request.post)
-        if form.is_valid():
-            name=form.cleaned_data('name')
-            email=form.cleaned_data('email')
-            to=form.cleaned_data('to')
-            comments=form.cleaned_data('comments')
-            send_mail(
-                        "Subject",
-                        "Message.",
-                        "from@example.com",
-                        ["john@example.com", "jane@example.com"],
-)
-            print(name,email,to,email,comments)
-            form.save()
-    else:
-        email_form=EmailPostForm()
-        return render(request,"base/post/email_form.html",{'email_form':email_form})
-
