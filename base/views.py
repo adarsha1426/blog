@@ -88,19 +88,20 @@ def post_comment(request,post_id):
     post=get_object_or_404(Post,id=post_id,status='published')
     comment=None
     form=CommentForm(data=request.POST)
-    if form.is_valid():
-        comment=form.save(commit=False)
-        comment.post=post
-        comment.save()
-        return render(request,'base/post/comment.html',{
-                                            'post':post,
-                                                'form':form,
-                                                'comment':comment
-                                                 })
+    if request.method=="POST":
+        if form.is_valid():
+            comment=form.save(commit=False)
+        
+            comment.save()
+            return render(request,'base/post/comment_form.html',{
+                                                'post':post,
+                                                    'form':form,
+                                                    'comment':comment
+                                                    })
     else:
         form=CommentForm()
         print(form.label_suffix)
-    return render(request,'blog/post/comment_form.html',{'post':post,
+    return render(request,'post/comment_form.html',{'post':post,
                                                         'comment':comment,
                                                         'form':form})
 

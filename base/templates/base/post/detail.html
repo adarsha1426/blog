@@ -7,8 +7,7 @@
         {{post.body|linebreaks}}
         <hr>
         {% for comment in comments %}
-    <p>{{comment}}<p>
-{% endfor %}
+            <h5>{{comment.user_name}}</h5>&nbsp;{{comment.comment_text}}<p>
+        {% endfor %}
         {% include "base/post/comment_form.html" %}
 {% endblock  %}
-{% include "base/post/comment_form.html" %}
