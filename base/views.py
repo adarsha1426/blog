@@ -64,7 +64,7 @@ def post_share(request,post_id):
             cd=form.cleaned_data
         else:
             form=EmailPostForm()
-    return render(request,'base/post/share.html',{'post':post,'form':form})
+    return render(request,'post/share.html',{'post':post,'form':form})
 
 def post_detail(request, year, month, day, post):
     post = get_object_or_404(Post,
@@ -77,7 +77,23 @@ def post_detail(request, year, month, day, post):
     comments = post.comments.filter(active=True)
     # Form for users to comment
     form = CommentForm()
+    return render(request,
+                  'base/post/detail.html',
+                  {'post': post,
+                   'comments': comments,
+                   'form': form})
 
+def post_detail(request, year, month, day, post):
+    post = get_object_or_404(Post,
+                             status=Post.Status.PUBLISHED,
+                             slug=post,
+                             publish__year=year,
+                             publish__month=month,
+                             publish__day=day)
+    # List of active comments for this post
+    comments = post.comments.filter(active=True)
+    # Form for users to comment
+    form = CommentForm()
     return render(request,
                   'base/post/detail.html',
                   {'post': post,
@@ -87,20 +103,17 @@ def post_detail(request, year, month, day, post):
 def post_comment(request,post_id):
     post=get_object_or_404(Post,id=post_id,status='published')
     comment=None
-    form=CommentForm(data=request.POST)
-    if request.method=="POST":
-        if form.is_valid():
-            comment=form.save(commit=False)
-        
-            comment.save()
-            return render(request,'base/post/comment_form.html',{
+    form=CommentForm()
+    if form.is_valid():
+        comment=form.save(commit=False)
+        comment.save()
+        return render(request,'base/post/comment.html',{
                                                 'post':post,
-                                                    'form':form,
-                                                    'comment':comment
-                                                    })
+                                                'form':form,
+                                                'comment':comment
+                                                })
     else:
         form=CommentForm()
-        print(form.label_suffix)
     return render(request,'post/comment_form.html',{'post':post,
                                                         'comment':comment,
                                                         'form':form})
