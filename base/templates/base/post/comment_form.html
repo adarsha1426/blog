@@ -1,32 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script>
-        function commentForm() {
-            var displayForm = document.getElementById("form-container");
-            displayForm.style.display = 'block';
-        }
-    </script>
-</head>
-<body>
-    {% for x in comment %}
-    <p>{{ x }}</p>
-    {% endfor %}
-    {% if user.is_authenticated %}
-    <input type="button" onclick="commentForm()" value="Add Comment">
-    <div id="form-container" style="display: none;">
-        <form action="{% url 'base:add_comment' post.id=id %}" method="POST">
-            {% csrf_token %}
-            {{ form }}
-            <input type="submit" value="Add">
-        </form>
-    </div>
-    {% else %}
-    <h1>You need to Login to comment on the post</h1>
-    {% endif %}
-    <a href="{% url "base:post_list" %}">Back</a>
-</body>
-</html>
+
+{% if user.is_authenticated %}
+<form action="{% url "base:add_comment"  post.id %}" method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type="Submit" value="Submit">
+</form>
+{% else %}
+<p><a href="{% url "base:login" %}">Login</a> to comment your views on this blog</p>
+{% endif %}
+

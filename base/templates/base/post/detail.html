@@ -1,13 +1,56 @@
 {% extends "base/base.html" %}
-{% block title %}{{post.title}}{% endblock  %}
-{% block content %}
-    <h1>{{post.title}}</h1>
+  {% block title %}{{ post.title }}{% endblock %}
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  </head>
+<script>
+  function display(){
+    var linkClick=document.getElementByID('#view')
+    
+  }
+</script>
+ {% block content %}
+ <body>
+    <h1>{{ post.title }}</h1>
     <p class="date">
-        Published {{post.publish}} by {{post.author}}
-        {{post.body|linebreaks}}
-        <hr>
-        {% for comment in comments %}
-            <h5>{{comment.user_name}}</h5>&nbsp;{{comment.comment_text}}<p>
-        {% endfor %}
+      Published {{ post.publish }} by {{ post.author }}
+     </p>
+  {{ post.body|linebreaks }}
+    <p>
+      <a href="#">
+        Share this post
+      </a>
+    </p>
+    
+      {% with comments.count as total_comments %}
+      <h2>
+        {{ total_comments }} comment{{ total_comments|pluralize }}
+      </h2>
+      <p><a onclick="display()" id="view">Click<a> to View Comments</p>
+        {% for comment in comments  %}
+        <table>
+          <tr>
+            <td>
+            {{comment.user_name}}
+            </td>
+            <td><p>{{comment.comment_text}}</p></td>
+          </tr>
+          
+
+        </table>  
+        
+          
+    {% endfor %}
+        {% endwith %}
         {% include "base/post/comment_form.html" %}
-{% endblock  %}
+    </body>
+    </html>
+ {% endblock %}
+
+  
+ 
+ 
