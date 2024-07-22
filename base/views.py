@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.http import Http404
-from .models import Post
+from .models import Post , Comment
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate,login,logout as auth_logout
 from .forms import EmailPostForm,RegistrationForm,LoginForm,CommentForm
@@ -73,6 +73,7 @@ def post_detail(request, year, month, day, post):
                              publish__year=year,
                              publish__month=month,
                              publish__day=day)
+    
     # List of active comments for this post
     comments = post.comments.filter(active=True)
     # Form for users to comment
@@ -83,41 +84,29 @@ def post_detail(request, year, month, day, post):
                    'comments': comments,
                    'form': form})
 
-def post_detail(request, year, month, day, post):
-    post = get_object_or_404(Post,
-                             status=Post.Status.PUBLISHED,
-                             slug=post,
-                             publish__year=year,
-                             publish__month=month,
-                             publish__day=day)
-    # List of active comments for this post
-    comments = post.comments.filter(active=True)
-    # Form for users to comment
-    form = CommentForm()
-    return render(request,
-                  'base/post/detail.html',
-                  {'post': post,
-                   'comments': comments,
-                   'form': form})
 
-def post_comment(request,post_id):
-    post=get_object_or_404(Post,id=post_id,status='published')
-    comment=None
-    form=CommentForm()
+
+def post_comment(request, post_id):
+    post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
+    comment = None
+    # A comment was posted
+    form = CommentForm(data=request.POST)
     if form.is_valid():
-        comment=form.save(commit=False)
+        # Create a Comment object without saving it to the database
+        comment = form.save(commit=False)
+        comment.user=request.user
+        # Assign the post to the comment
+        comment.post = post
+        # Save the comment to the database
         comment.save()
-        return render(request,'base/post/comment.html',{
-                                                'post':post,
-                                                'form':form,
-                                                'comment':comment
-                                                })
-    else:
-        form=CommentForm()
-    return render(request,'post/comment_form.html',{'post':post,
-                                                        'comment':comment,
-                                                        'form':form})
-
+    return render(request, 'base/post/comment.html',
+                           {'post': post,
+                            'comment_form': form,
+                            'comment': comment})
+def view_comment(request,post_id):
+    post=get_object_or_404(Post,id=post_id,status=Post.Status.PUBLISHED)
+    comment=post.comment.filter(active=True)
+    return render
 def email(request):
     email_form=EmailPostForm()
     if request.method=="POST":
@@ -132,7 +121,7 @@ def email(request):
                         "Message",
                         "adarshamishra89@gmail.com",
                         ['adarshamishra98@gmail.com'],
-)
+                    )
             print(name,email,to,email,comments)
             form.save()
     else:
