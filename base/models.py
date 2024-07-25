@@ -31,7 +31,7 @@ class Post(models.Model):
     published=PublishedManager() #Our custom manager
 
     class Meta:
-        ordering=['-publish'] #Added hiphen for descending order 
+        ordering=['-publish'] 
         indexes=[
             models.Index(fields=['-publish'])
         ]
