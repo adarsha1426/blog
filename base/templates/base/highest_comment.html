@@ -1,0 +1,11 @@
+{% load static %}
+<div class="rightcolumn">
+        <div class="card">
+                <h3>Popular Post</h3>
+                {% for post in high_comment %}
+                <a href="{{post.get_absolute_url}}">{{post.title | truncatewords:3}}</a><br>
+                   {% endfor %}
+        </div>
+      </div>
+
+        

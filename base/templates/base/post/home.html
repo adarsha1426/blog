@@ -1,21 +1,18 @@
+{% extends "base/base.html" %}
 
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static "css/blog.css" %}">
-    <title>Document</title>
-</head>
-<body>
-    <h1>Welcome to the blog app</h1>
-<a href="{% url "base:post_list" %}" >Post_list</a>
-<a href="{% url "base:login" %}">Login</a>
-<a href="{% url "base:register" %}">Register</a>
-{% if request.user %}
-<h1>{{user}}</h1>
-    <a href="{% url "base:logout" %}">Logout</a>
-{% endif %}
-</body>
-</html>
+{% block title %}Riki's Realm Blog{% endblock %}
+{% block content %}
+  <h1>Riki's Realm</h1>
+  {% for post in posts %}
+    <h2>
+     <a href="{{post.get_absolute_url}}">   {% comment %}{% url 'base:post_detail' post.id %} {% endcomment %}
+        {{ post.title }}
+      </a>
+    </h2>
+    <p class="date">
+      Published {{ post.publish }} by {{ post.author }}
+    </p>
+    {{ post.body|truncatewords:30|linebreaks }}
+  {% endfor %}
+  {% include "pagination.html" with page=page_obj %}
+ {% endblock %}

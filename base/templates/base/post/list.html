@@ -1,18 +1,46 @@
-{% extends "base/base.html" %}
+{% load static %}
 
-{% block title %}Riki's Realm Blog{% endblock %}
-{% block content %}
-  <h1>Riki's Realm</h1>
-  {% for post in posts %}
-    <h2>
-     <a href="{{post.get_absolute_url}}">   {% comment %}{% url 'base:post_detail' post.id %} {% endcomment %}
-        {{ post.title }}
-      </a>
-    </h2>
-    <p class="date">
-      Published {{ post.publish }} by {{ post.author }}
-    </p>
-    {{ post.body|truncatewords:30|linebreaks }}
-  {% endfor %}
-  {% include "pagination.html" with page=page_obj %}
- {% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="{% static "css/home.css" %}" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+<div class="header">
+  <h2>Riki's Realm</h2>
+  <h3>Welcome to the blog</h3>
+</div>
+
+<div class="row">
+  {% include "base/highest_comment.html" %}
+    
+    <div class="leftcolumn">
+      {% for post in posts %}
+      <div class="card">
+        <a href="{{ post.get_absolute_url }}"><h2>{{ post.title|capfirst|truncatechars:80 }}</h2></a>
+        <h5>{{ post.publish }}</h5>
+        <p>{{ post.body|truncatewords:30 }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="footer">
+    {% if posts.has_previous %}
+        <a href="?page={{posts.previous_page_number}}">Previous</a>
+        {%endif%}
+        <span class="current">
+            Page {{page.number}} of {{page.paginator.num_pages}}
+        </span>
+    {%if posts.has_next%}
+    <a href="?page={{posts.next_page_number}}">Next</a>
+    {%endif%}
+  </div>
+</body>
+</html>
