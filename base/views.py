@@ -1,3 +1,4 @@
+from typing import Any
 from django.shortcuts import render,redirect
 from django.http import Http404
 from .models import Post , Comment
@@ -8,6 +9,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.mail import BadHeaderError, send_mail
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
+from django.db.models import Count
 from django.contrib import messages
 #class based views
 from django.views.generic import ListView
@@ -25,9 +27,9 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('/home')  # Redirect to the home page after successful login
+                return redirect('/home')  
             else:
-                # Invalid login credentials
+                messages.error(request,"Invalid Login Credntial")
                 form.add_error(None, 'Invalid username or password')
     else:
         form = LoginForm()
@@ -35,6 +37,7 @@ def login_view(request):
     return render(request, 'base/registration/login.html', {'form': form})
 
 def logout_view(request):
+    messages.success(request,"You have been successfully loggd out")
     auth_logout(request)
     return redirect('base:login')
 
@@ -43,18 +46,30 @@ def register(request):
         form=RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('/home')
+            messages.success(request,"Account Created")
+            return redirect('/login')
     else:
         form=RegistrationForm()
     return render(request,'base/registration/sign_up.html',{'form':form})
 
 
-class PostListView(ListView):
-    queryset=Post.published.all()
-    context_object_name='posts'
-    paginate_by=3
-    template_name='base/post/list.html'
+def get_context():
+    context = {}
+    context['high_comment'] = Post.objects.annotate(num_comments=Count('comments')).order_by('-num_comments')[:3]
+    return context
+def post_list(request):
+    posts = Post.published.all()
+    paginator = Paginator(posts, 3)  # Show 3 posts per page.
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
+    context = {
+        'posts': page_obj,
+    }
+    custom_context = get_context()
+    context.update(custom_context)
+    
+    return render(request, 'base/post/list.html', context)
 
 def post_share(request,post_id):
     post=get_object_or_404(Post,id=post_id,status=Post.Status.PUBLISHED)
@@ -73,8 +88,6 @@ def post_detail(request, year, month, day, post):
                              publish__year=year,
                              publish__month=month,
                              publish__day=day)
-    
-    # List of active comments for this post
     comments = post.comments.filter(active=True)
     # Form for users to comment
     form = CommentForm()
@@ -84,29 +97,20 @@ def post_detail(request, year, month, day, post):
                    'comments': comments,
                    'form': form})
 
-
-
 def post_comment(request, post_id):
     post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
     comment = None
-    # A comment was posted
     form = CommentForm(data=request.POST)
     if form.is_valid():
-        # Create a Comment object without saving it to the database
         comment = form.save(commit=False)
         comment.user=request.user
-        # Assign the post to the comment
         comment.post = post
-        # Save the comment to the database
         comment.save()
     return render(request, 'base/post/comment.html',
                            {'post': post,
                             'comment_form': form,
                             'comment': comment})
-def view_comment(request,post_id):
-    post=get_object_or_404(Post,id=post_id,status=Post.Status.PUBLISHED)
-    comment=post.comment.filter(active=True)
-    return render
+
 def email(request):
     email_form=EmailPostForm()
     if request.method=="POST":
@@ -127,37 +131,3 @@ def email(request):
     else:
         email_form=EmailPostForm()
         return render(request,"base/post/email_form.html",{'email_form':email_form})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def post_list(request):
-#     post_list = Post.published.all()
-#     # Pagination with 3 posts per page
-#     paginator = Paginator(post_list, 3)
-#     page_number = request.GET.get('page', 1)
-#     try:
-#         posts=paginator.page(page_number)
-#     except PageNotAnInteger:
-#         #if page is not an integer
-#         posts=paginator.page(1)
-#     except EmptyPage:
-#         #if page number is out of range deliver last page of results
-#         posts=paginator.page(paginator.num_pages)
-#     return render(request,
-#                   'base/post/list.html',
-#                   {'posts': posts})
