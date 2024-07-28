@@ -12,7 +12,7 @@ urlpatterns = [
     path('register',views.register,name="register"),
     path('<int:year>/<int:month>/<int:day>/<slug:post>/',views.post_detail,name='post_detail'),
     path('comment/<int:post_id>',views.post_comment,name='add_comment'),
-    path('email',views.email,name="email"),
+    path('email/<int:post_id>',views.share_email,name="email"),
 
 
 ]   

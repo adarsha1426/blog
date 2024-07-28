@@ -1,4 +1,3 @@
-from typing import Any
 from django.shortcuts import render,redirect
 from django.http import Http404
 from .models import Post , Comment
@@ -6,11 +5,12 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate,login,logout as auth_logout
 from .forms import EmailPostForm,RegistrationForm,LoginForm,CommentForm
 from django.contrib.auth.forms import UserCreationForm
-from django.core.mail import BadHeaderError, send_mail
+from django.core.mail import  send_mail
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 from django.db.models import Count
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 #class based views
 from django.views.generic import ListView
 
@@ -71,15 +71,15 @@ def post_list(request):
     
     return render(request, 'base/post/list.html', context)
 
-def post_share(request,post_id):
-    post=get_object_or_404(Post,id=post_id,status=Post.Status.PUBLISHED)
-    if request.method=="POST":
-        form=EmailPostForm(request.POST)
-        if form.is_valid():
-            cd=form.cleaned_data
-        else:
-            form=EmailPostForm()
-    return render(request,'post/share.html',{'post':post,'form':form})
+# def post_share(request,post_id):
+#     post=get_object_or_404(Post,id=post_id,status=Post.Status.PUBLISHED)
+#     if request.method=="POST":
+#         form=EmailPostForm(request.POST)
+#         if form.is_valid():
+#             cd=form.cleaned_data
+#         else:
+#             form=EmailPostForm()
+#     return render(request,'post/share.html',{'post':post,'form':form})
 
 def post_detail(request, year, month, day, post):
     post = get_object_or_404(Post,
@@ -110,24 +110,25 @@ def post_comment(request, post_id):
                            {'post': post,
                             'comment_form': form,
                             'comment': comment})
-
-def email(request):
-    email_form=EmailPostForm()
+def share_email(request,post_id):
+     #todo 
+    post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
+    sent = False
+    form=EmailPostForm()
+    print('1st')
     if request.method=="POST":
-        form=EmailPostForm(request.post)
+        print("2nd")
+        form=EmailPostForm(request.POST)
         if form.is_valid():
-            name=form.cleaned_data('name')
-            email=form.cleaned_data('email')
-            to=form.cleaned_data('to')
-            comments=form.cleaned_data('comments')
-            send_mail(
-                        "Subject",
-                        "Message",
-                        "adarshamishra89@gmail.com",
-                        ['adarshamishra98@gmail.com'],
-                    )
-            print(name,email,to,email,comments)
-            form.save()
-    else:
-        email_form=EmailPostForm()
-        return render(request,"base/post/email_form.html",{'email_form':email_form})
+            print("Working")
+            name=form.cleaned_data['name']
+            to=form.cleaned_data['to']
+            comment=form.cleaned_data['comment']
+            subject=f"Hola {name } , this is your post {post.title}"
+            send_mail(subject,comment,'adarshamishra89@gmail.com',['to'],fail_silently=False)
+            messages.success("Email sent")
+            return redirect('/home')
+        else:
+            print("Error")
+        
+    return render(request,"base/post/email_form.html",{'form':form,'post':post})
