@@ -1,8 +1,8 @@
-
+{% load crispy_forms_tags %}
 {% if user.is_authenticated %}
 <form action="{% url "base:add_comment"  post.id %}" method="POST">
     {% csrf_token %}
-    {{form.as_p}}
+    {{form.comment_text| as_crispy_field s}}
     <input type="Submit" value="Submit">
 </form>
 {% else %}

@@ -45,23 +45,23 @@
             <div class="center">
                 <h1>Share it through email</h1>
                 <div class="container form-container">
-                    {% if messages %}
                         {% for message in messages %}
                             <p class="alert-message">{{ message }}</p>
                         {% endfor %}
-                    {% endif %}
                     <div class="form-group">
                         <label for="post_title">Title of the Post: {{post.title}}</label>
                         <p>Author: {{post.author|capfirst}}</p>
                     </div>
-                    <form action="{% url 'base:login' %}" method="POST">
+                    <form action="{% url 'base:email'  post.id %}" method="POST">
                         {% csrf_token %}
                         {{form.name|as_crispy_field}}
                         {{form.to|as_crispy_field}}
                         {{form.comments|as_crispy_field}}
                         <div class="form-group">
-                            <input type="submit" value="Submit">
+                            <input type="submit" value="Send">
                         </div>
                     </form>
-             </div>
+                </div>
+            </div>  
+        </div>              
 </html>

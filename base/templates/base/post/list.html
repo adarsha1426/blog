@@ -11,7 +11,9 @@
 
 </head>
 <body>
-
+{% for message in messages  %}
+  <h1>{{message}}</h1>
+{% endfor %}
 <div class="header">
   <h2>Riki's Realm</h2>
   <h3>Welcome to the blog</h3>

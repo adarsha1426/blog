@@ -22,7 +22,7 @@
                 {{ post.body|linebreaks }}
             </div>
             <p>
-                <a href="{% url "base:email" %}">
+                <a href="{% url "base:email" post.id %}">
                     Share this post
                 </a>
             </p>

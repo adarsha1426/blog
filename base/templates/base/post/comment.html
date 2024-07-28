@@ -1,11 +1,27 @@
-{% extends "base/base.html" %}
-{% block title %}Add a comment{% endblock %}
+{% load crispy_forms_tags %}
 {% block content %}
-
- {% if comment %}
-   <h2>Your comment has been added.</h2>
+<!DOCTYPE html>
+<html lang="en">
+  <style>
+   
+   h1{
+    color:green;
+   }
+   a{
+      text-decoration:none;
+      color:blue;
+   }
+  </style>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  {% if comment %}
+  <h1 >Your comment has been added.</h2>
    <p><a href="{{ post.get_absolute_url }}">Back to the post</a></p>
- {% else %}
-   {% include "base/post/includes/comment_form.html" %}
- {% endif %}
-{% endblock %}
+    {% endif %}
+</body>
+{% endblock content %}
+</html>

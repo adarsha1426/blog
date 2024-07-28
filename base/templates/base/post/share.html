@@ -1,3 +1,18 @@
-<form action="" method="POST">
-    {{form.as_p}}
-    <form>
+
+{% block title %}Share a post{% endblock %}
+{% block content %}
+{% for message in messages  %}
+
+{% if sent %}
+   <h1>E-mail successfully sent</h1>
+   <p>
+    {{message}}
+     "{{ post.title }}" was successfully sent to {{ form.cleaned_data.to }}.
+   </p>
+ {% else %}
+ 
+   <h1>{{message}}</h1>
+   
+ {% endif %}
+ {% endfor %} 
+{% endblock %}
