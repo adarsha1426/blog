@@ -13,11 +13,12 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 #class based views
 from django.views.generic import ListView
+from django.conf import settings
 
 # Create your views here.
-def home(request):
-    user=request.user
-    return render(request,'base/post/home.html')
+# def home(request):
+#     user=request.user
+#     return render(request,'base/post/list.html')
 def login_view(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
@@ -71,16 +72,6 @@ def post_list(request):
     
     return render(request, 'base/post/list.html', context)
 
-# def post_share(request,post_id):
-#     post=get_object_or_404(Post,id=post_id,status=Post.Status.PUBLISHED)
-#     if request.method=="POST":
-#         form=EmailPostForm(request.POST)
-#         if form.is_valid():
-#             cd=form.cleaned_data
-#         else:
-#             form=EmailPostForm()
-#     return render(request,'post/share.html',{'post':post,'form':form})
-
 def post_detail(request, year, month, day, post):
     post = get_object_or_404(Post,
                              status=Post.Status.PUBLISHED,
@@ -111,24 +102,27 @@ def post_comment(request, post_id):
                             'comment_form': form,
                             'comment': comment})
 def share_email(request,post_id):
-     #todo 
+
     post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
     sent = False
     form=EmailPostForm()
     print('1st')
     if request.method=="POST":
-        print("2nd")
         form=EmailPostForm(request.POST)
         if form.is_valid():
-            print("Working")
+            form.save()
+        else:
+            post_url=request.build_absolute_uri(post.get_absolute_url())
             name=form.cleaned_data['name']
             to=form.cleaned_data['to']
-            comment=form.cleaned_data['comment']
-            subject=f"Hola {name } , this is your post {post.title}"
-            send_mail(subject,comment,'adarshamishra89@gmail.com',['to'],fail_silently=False)
-            messages.success("Email sent")
+            comment=form.cleaned_data['comments']
+            message=f"""Hola {name},
+Hope your are interested in this post: {post.title}
+Post Url : {post_url}
+Comments: {comment}
+"""
+            subject=post.title
+            send_mail(subject,message,settings.EMAIL_HOST_USER,[to],fail_silently=False)
+            messages.success(request,"Email sent")
             return redirect('/home')
-        else:
-            print("Error")
-        
     return render(request,"base/post/email_form.html",{'form':form,'post':post})

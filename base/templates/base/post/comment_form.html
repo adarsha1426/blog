@@ -2,10 +2,10 @@
 {% if user.is_authenticated %}
 <form action="{% url "base:add_comment"  post.id %}" method="POST">
     {% csrf_token %}
-    {{form.comment_text| as_crispy_field s}}
+    {{form.comment_text| as_crispy_field }}
     <input type="Submit" value="Submit">
 </form>
 {% else %}
-<p><a href="{% url "base:login" %}">Login</a> to comment your views on this blog</p>
+<p><a href="{% url "base:login" %}">Login</a> to comment your views on this article.</p>
 {% endif %}
 
