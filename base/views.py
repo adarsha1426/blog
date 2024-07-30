@@ -126,3 +126,6 @@ Comments: {comment}
             messages.success(request,"Email sent")
             return redirect('/home')
     return render(request,"base/post/email_form.html",{'form':form,'post':post})
+
+def error_404(request,exception):
+    return render(request,'base/error.html')

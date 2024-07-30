@@ -20,7 +20,6 @@
         {% if user.is_authenticated %}
         <h2>Hello, {{user.first_name}}</h2>
         <a href="{% url "base:home" %}">Go to home</a>
-        
             <a href="{% url "base:logout" %}">Logout</a>
         {% endif %}
     </div>
