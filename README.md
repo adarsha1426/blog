@@ -16,7 +16,8 @@ A blog web application built with Django, featuring a comment system, user authe
 
 - **Responsive Design:** 
   - Mobile-friendly layout.
-
+- **Live Demo **
+    - https://adarsha1426.pythonanywhere.com/
 ## Installation
 
 1. **Clone the repository:**
@@ -29,7 +30,3 @@ A blog web application built with Django, featuring a comment system, user authe
  ```bash
    python manage.py runserver
 
-3. **Live Demo**
-  
-you can view the live demo at 
-[adarsha1426.pythonanywhere.com](https://adarsha1426.pythonanywhere.com/)
