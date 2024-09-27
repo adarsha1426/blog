@@ -28,3 +28,8 @@ A blog web application built with Django, featuring a comment system, user authe
 2. **Run**
  ```bash
    python manage.py runserver
+
+3. **Live Demo**
+  
+you can view the live demo at 
+[adarsha1426.pythonanywhere.com](https://adarsha1426.pythonanywhere.com/)
